@@ -1,5 +1,70 @@
 import SwiftUI
 
+// MARK: - About Sheet
+
+struct AboutView: View {
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        VStack(spacing: 20) {
+            // Icon + name
+            VStack(spacing: 8) {
+                Image(systemName: "clipboard.fill")
+                    .font(.system(size: 48))
+                    .foregroundStyle(Color.accentColor)
+
+                Text("Kopipes")
+                    .font(.title2)
+                    .fontWeight(.semibold)
+
+                Text("Version 1.0.0")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            Divider()
+
+            // Description
+            Text("A lightweight macOS clipboard manager that lives in your menu bar. Save clips manually, organize them into categories, and paste them instantly with a single click.")
+                .font(.callout)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Divider()
+
+            // Details
+            VStack(spacing: 6) {
+                infoRow(label: "Developer", value: "Kopipes")
+                infoRow(label: "License", value: "MIT")
+                infoRow(label: "Platform", value: "macOS 13.0+")
+                infoRow(label: "Storage", value: "Local — no cloud, no tracking")
+                infoRow(label: "Source", value: "github.com/kopipes/kopi-pes")
+            }
+
+            Divider()
+
+            Button("Close") { dismiss() }
+                .keyboardShortcut(.defaultAction)
+        }
+        .padding(24)
+        .frame(width: 320)
+    }
+
+    private func infoRow(label: String, value: String) -> some View {
+        HStack {
+            Text(label)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .frame(width: 80, alignment: .trailing)
+            Text(value)
+                .font(.caption)
+                .foregroundStyle(.primary)
+            Spacer()
+        }
+    }
+}
+
 // MARK: - Category Chip
 
 struct CategoryChip: View {

@@ -5,6 +5,7 @@ struct ContentView: View {
     @State private var searchText = ""
     @State private var showAddCategory = false
     @State private var showSaveConfirm = false
+    @State private var showAbout = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -20,6 +21,9 @@ struct ContentView: View {
         .sheet(isPresented: $showAddCategory) {
             AddCategoryView()
                 .environmentObject(store)
+        }
+        .sheet(isPresented: $showAbout) {
+            AboutView()
         }
     }
 
@@ -57,6 +61,15 @@ struct ContentView: View {
             }
             .buttonStyle(.plain)
             .help("New category")
+
+            Button {
+                showAbout = true
+            } label: {
+                Image(systemName: "info.circle")
+                    .foregroundStyle(.secondary)
+            }
+            .buttonStyle(.plain)
+            .help("About Kopipes")
 
             Button {
                 NSApplication.shared.terminate(nil)
