@@ -57,6 +57,15 @@ struct ContentView: View {
             }
             .buttonStyle(.plain)
             .help("New category")
+
+            Button {
+                NSApplication.shared.terminate(nil)
+            } label: {
+                Image(systemName: "power")
+                    .foregroundStyle(.secondary)
+            }
+            .buttonStyle(.plain)
+            .help("Quit Kopipes")
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 10)
