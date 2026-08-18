@@ -30,6 +30,10 @@ swiftc \
 cp "$PROJECT_DIR/Kopipes/Resources/Info.plist" "$APP_BUNDLE/Contents/Info.plist"
 printf 'APPL????' > "$APP_BUNDLE/Contents/PkgInfo"
 
+# Ad-hoc sign so macOS doesn't block unsigned binaries
+echo "Signing..."
+codesign --sign - --force --deep "$APP_BUNDLE"
+
 # Remove quarantine so macOS doesn't block it
 xattr -cr "$APP_BUNDLE"
 
@@ -37,6 +41,9 @@ xattr -cr "$APP_BUNDLE"
 echo "Installing to /Applications..."
 rm -rf /Applications/Kopipes.app
 cp -r "$APP_BUNDLE" /Applications/Kopipes.app
+
+# Sign and clear quarantine on the installed copy too
+codesign --sign - --force --deep /Applications/Kopipes.app
 xattr -cr /Applications/Kopipes.app
 
 echo "Done. Kopipes is installed in /Applications."
