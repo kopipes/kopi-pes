@@ -97,6 +97,60 @@ struct AddCategoryView: View {
     }
 }
 
+// MARK: - Edit Content Sheet
+
+struct EditContentView: View {
+    @EnvironmentObject var store: ClipboardStore
+    @Environment(\.dismiss) private var dismiss
+    let item: ClipboardItem
+    @State private var content: String
+
+    init(item: ClipboardItem) {
+        self.item = item
+        _content = State(initialValue: item.content)
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("Edit Content")
+                .font(.headline)
+
+            TextEditor(text: $content)
+                .font(.callout)
+                .frame(minHeight: 120, maxHeight: 200)
+                .padding(6)
+                .background(Color(NSColor.controlBackgroundColor))
+                .clipShape(RoundedRectangle(cornerRadius: 6))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 6)
+                        .strokeBorder(Color(NSColor.separatorColor), lineWidth: 1)
+                )
+
+            HStack {
+                Spacer()
+                Button("Cancel") { dismiss() }
+                    .keyboardShortcut(.cancelAction)
+                Button("Save") {
+                    let trimmed = content.trimmingCharacters(in: .whitespacesAndNewlines)
+                    guard !trimmed.isEmpty else { return }
+                    var updated = item
+                    updated.content = trimmed
+                    // Update label too if it was auto-generated from the old content
+                    if item.label == String(item.content.prefix(40)).trimmingCharacters(in: .whitespacesAndNewlines) {
+                        updated.label = String(trimmed.prefix(40)).trimmingCharacters(in: .whitespacesAndNewlines)
+                    }
+                    store.update(item: updated)
+                    dismiss()
+                }
+                .keyboardShortcut(.defaultAction)
+                .disabled(content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+            }
+        }
+        .padding(20)
+        .frame(width: 340)
+    }
+}
+
 // MARK: - Edit Label Sheet
 
 struct EditLabelView: View {

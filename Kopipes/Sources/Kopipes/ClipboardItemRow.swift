@@ -5,6 +5,7 @@ struct ClipboardItemRow: View {
     let item: ClipboardItem
     @State private var isHovered = false
     @State private var showEditLabel = false
+    @State private var showEditContent = false
     @State private var showAssignCategory = false
     @State private var showDeleteConfirm = false
 
@@ -58,6 +59,10 @@ struct ClipboardItemRow: View {
         .contextMenu { contextMenu }
         .sheet(isPresented: $showEditLabel) {
             EditLabelView(item: item)
+                .environmentObject(store)
+        }
+        .sheet(isPresented: $showEditContent) {
+            EditContentView(item: item)
                 .environmentObject(store)
         }
         .sheet(isPresented: $showAssignCategory) {
@@ -116,6 +121,11 @@ struct ClipboardItemRow: View {
             showEditLabel = true
         } label: {
             Label("Edit Label", systemImage: "pencil")
+        }
+        Button {
+            showEditContent = true
+        } label: {
+            Label("Edit Content", systemImage: "text.cursor")
         }
         Button {
             showAssignCategory = true
