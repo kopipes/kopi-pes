@@ -5,6 +5,34 @@ A lightweight macOS clipboard manager that lives in your menu bar. Save clips ma
 ![macOS](https://img.shields.io/badge/macOS-13.0%2B-blue)
 ![Swift](https://img.shields.io/badge/Swift-5.9%2B-orange)
 ![License](https://img.shields.io/badge/license-MIT-green)
+![Release](https://img.shields.io/github/v/release/kopipes/kopi-pes)
+
+---
+
+## Download
+
+**[Download Kopipes-v1.0.0.zip](https://github.com/kopipes/kopi-pes/releases/latest/download/Kopipes-v1.0.0.zip)**
+
+Prebuilt for Apple Silicon (arm64), macOS 13+.
+
+### Install from the prebuilt binary
+
+**1. Download and unzip** `Kopipes-v1.0.0.zip`
+
+**2. Move to Applications:**
+```bash
+mv ~/Downloads/Kopipes.app /Applications/Kopipes.app
+```
+
+**3. Clear Gatekeeper quarantine and sign (required on macOS 14+):**
+```bash
+sudo xattr -cr /Applications/Kopipes.app
+sudo codesign --sign - --force --deep /Applications/Kopipes.app
+```
+
+**4. Open from Finder, Launchpad, or Spotlight.**
+
+> macOS will ask for **Accessibility permission** on first paste. Go to **System Settings → Privacy & Security → Accessibility** and enable Kopipes.
 
 ---
 
@@ -15,23 +43,23 @@ A lightweight macOS clipboard manager that lives in your menu bar. Save clips ma
 - **One-click paste** — click any saved clip to instantly paste it into the active app
 - **Categories** — organize clips into color-coded categories
 - **Search** — filter clips by label or content in real time
-- **Edit labels** — rename any clip to something memorable
+- **Edit labels and content** — rename or rewrite any saved clip
+- **Delete confirmation** — confirms before removing a clip permanently
 - **Persistent storage** — clips survive app restarts, stored locally in Application Support
 - **Click-outside to close** — popover dismisses when you click anywhere else
+- **Quit button** — power icon in the header closes the app
 
 ---
 
 ## Requirements
 
 - macOS 13.0 (Ventura) or later
-- Apple Silicon or Intel Mac
-- Xcode 15+ (to build from source) — or use the prebuilt binary
+- Apple Silicon (arm64) for the prebuilt binary
+- Swift Command Line Tools (to build from source — no full Xcode needed)
 
 ---
 
 ## Building from Source
-
-You do not need the full Xcode app. The Swift command-line tools are sufficient.
 
 **1. Install Command Line Tools (if not already installed):**
 ```bash
@@ -44,36 +72,15 @@ git clone https://github.com/kopipes/kopi-pes.git
 cd kopi-pes
 ```
 
-**3. Build the `.app` bundle:**
+**3. Build, sign, and install in one step:**
 ```bash
-mkdir -p build/Kopipes.app/Contents/MacOS
-mkdir -p build/Kopipes.app/Contents/Resources
-
-swiftc \
-  Kopipes/Sources/Kopipes/Color+Hex.swift \
-  Kopipes/Sources/Kopipes/Models.swift \
-  Kopipes/Sources/Kopipes/PersistenceController.swift \
-  Kopipes/Sources/Kopipes/ClipboardStore.swift \
-  Kopipes/Sources/Kopipes/AppDelegate.swift \
-  Kopipes/Sources/Kopipes/ClipboardItemRow.swift \
-  Kopipes/Sources/Kopipes/SupportingViews.swift \
-  Kopipes/Sources/Kopipes/ContentView.swift \
-  Kopipes/Sources/Kopipes/KopipesApp.swift \
-  -sdk $(xcrun --show-sdk-path --sdk macosx) \
-  -target arm64-apple-macosx13.0 \
-  -parse-as-library \
-  -module-name Kopipes \
-  -o build/Kopipes.app/Contents/MacOS/Kopipes
-
-cp Kopipes/Resources/Info.plist build/Kopipes.app/Contents/Info.plist
-printf 'APPL????' > build/Kopipes.app/Contents/PkgInfo
+chmod +x build.sh
+./build.sh
 ```
 
-**4. Run it:**
-```bash
-xattr -cr build/Kopipes.app
-open build/Kopipes.app
-```
+This compiles the app, ad-hoc signs it, clears quarantine, and installs it to `/Applications` automatically.
+
+> After installing, run the Gatekeeper step from the **Install** section above if macOS still blocks the app.
 
 ---
 
@@ -88,7 +95,7 @@ open build/Kopipes.app
 1. Click the clipboard icon in the menu bar
 2. Click any saved clip — it is copied to the clipboard and pasted into the previously active app automatically
 
-> **Note:** On first use, macOS will ask for **Accessibility permission** to simulate the paste keystroke. Go to **System Settings → Privacy & Security → Accessibility** and enable Kopipes. Without it, clicking a clip still copies it to the clipboard but will not auto-paste.
+> **Accessibility permission** is required for auto-paste. macOS prompts on first use. Without it, clicking a clip copies to clipboard but does not auto-paste.
 
 ### Categories
 - Click the **folder+** icon in the header to create a category with a name and color
@@ -96,14 +103,18 @@ open build/Kopipes.app
 - Click a category chip at the top to filter clips
 - Right-click a category chip to delete it
 
-### Other actions (right-click a clip)
+### Clip actions (right-click any clip)
 | Action | Description |
 |---|---|
 | Paste | Copy + auto-paste into the active app |
 | Copy to Clipboard | Copy without pasting |
 | Edit Label | Rename the clip |
+| Edit Content | Edit the full text content |
 | Assign Category | Move to a category |
-| Delete | Remove permanently |
+| Delete | Asks for confirmation, then removes |
+
+### Closing the app
+Click the **power icon** in the top-right corner of the popover.
 
 ---
 
@@ -111,6 +122,7 @@ open build/Kopipes.app
 
 ```
 kopi-pes/
+├── build.sh                          # One-step build + sign + install script
 ├── Kopipes/
 │   ├── Sources/Kopipes/
 │   │   ├── KopipesApp.swift          # @main entry point, menu bar only
@@ -156,3 +168,4 @@ No network access, no sandboxing, no tracking.
 ## License
 
 MIT — see [LICENSE](LICENSE)
+
