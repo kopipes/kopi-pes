@@ -6,6 +6,7 @@ struct ClipboardItemRow: View {
     @State private var isHovered = false
     @State private var showEditLabel = false
     @State private var showAssignCategory = false
+    @State private var showDeleteConfirm = false
 
     private var categoryColor: Color {
         guard let catID = item.categoryID,
@@ -63,6 +64,14 @@ struct ClipboardItemRow: View {
             AssignCategoryView(item: item)
                 .environmentObject(store)
         }
+        .alert("Delete Clip?", isPresented: $showDeleteConfirm) {
+            Button("Delete", role: .destructive) {
+                store.delete(item: item)
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("Are you sure you want to delete \"\(item.label)\"? This cannot be undone.")
+        }
     }
 
     private var actionButtons: some View {
@@ -78,7 +87,7 @@ struct ClipboardItemRow: View {
             .help("Assign to category")
 
             Button {
-                store.delete(item: item)
+                showDeleteConfirm = true
             } label: {
                 Image(systemName: "trash")
                     .font(.caption)
@@ -115,7 +124,7 @@ struct ClipboardItemRow: View {
         }
         Divider()
         Button(role: .destructive) {
-            store.delete(item: item)
+            showDeleteConfirm = true
         } label: {
             Label("Delete", systemImage: "trash")
         }
