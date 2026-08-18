@@ -115,6 +115,7 @@ struct ContentView: View {
             TextField("Search...", text: $searchText)
                 .textFieldStyle(.plain)
                 .font(.callout)
+                .focusable(false)
             if !searchText.isEmpty {
                 Button { searchText = "" } label: {
                     Image(systemName: "xmark.circle.fill")
